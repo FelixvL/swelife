@@ -10,11 +10,11 @@ Casus Assignment:   LIFE 2015
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="Life2015.jar" size="32743" download="eager" />
+    <jar href="Life2015.jar" size="68709" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="Life2015" >
     <param name="requiredFXVersion" value="8.0+"/>
   </applet-desc>
-  <jfx:javafx-desc  width="800" height="600" main-class="life2015.gui.PlayField"  name="Life2015" />
+  <jfx:javafx-desc  width="800" height="600" main-class="app.graphics.gui.PlayField"  name="Life2015" />
   <update check="always"/>
 </jnlp>

@@ -30,7 +30,7 @@ public class CallbackEvent<T> {
     * @version 1.0
     * @param <T> Generic type for passing detail information when invoking the Callback Event.
     */
-    public interface Listener<T> {
+    public static interface Listener<T> {
         public void callback_Event(T detail);
     }
     
@@ -64,6 +64,15 @@ public class CallbackEvent<T> {
         dbgPrintln(">>>> " + getInvokingClassName() + " >> Listener Removed: " + listener.toString());
         listeners.remove(listener);
     }
+
+    /**
+     * Removes all Callback Listeners from the Event Caller stack
+     */
+    public void removeAllListeners() {
+        dbgPrintln(">>>> " + getInvokingClassName() + " >> All Listeners Removed!");
+        listeners.clear();
+    }
+
     
     /**
      * Invokes a Callback Event which will fire the callback_Event for all registered Listener. 

@@ -61,7 +61,7 @@ public class JFXHelper {
             }
             catch (Exception ex) {    
                 iv.setImage(null);
-                System.out.println("> SetImgFromResFile [" + iv.getId() + "] = " + file + " -> " + ex.toString());
+                //System.out.println("> SetImgFromResFile [" + iv.getId() + "] = " + file + " -> " + ex.toString());
                 return false;
             }
         }
@@ -83,7 +83,7 @@ public class JFXHelper {
             }
             catch (Exception ex) {    
                 iv.setGraphic(null);
-                System.out.println("> SetImgFromResFile [" + iv.getId() + "] = " + file + " -> " + ex.toString());
+                //System.out.println("> SetImgFromResFile [" + iv.getId() + "] = " + file + " -> " + ex.toString());
                 return false;
             }
         }
@@ -93,11 +93,11 @@ public class JFXHelper {
             String resFileID = cleanupPathSegments(file);
             try {
                 Image getImg = new Image(resFileID, w, h, resize, resize);
-                System.out.println(">>>> getImgFromResFile(" + resFileID + ")");
+                //System.out.println(">>>> getImgFromResFile(" + resFileID + ")");
                 return getImg;
             }
             catch (Exception ex) {    
-                System.out.println("> getImgFromResFile(" + resFileID + ") -> " + ex.toString());
+                //System.out.println("> getImgFromResFile(" + resFileID + ") -> " + ex.toString());
                 return null;
             }
         }
