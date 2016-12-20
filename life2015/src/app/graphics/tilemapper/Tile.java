@@ -6,11 +6,10 @@
 package app.graphics.tilemapper;
 
 import app.helper.CanvasBackBuffer;
-import app.world.interfaces.CollisionDetect;
 import app.world.domain.Coordinate;
-import app.world.domain.Direction;
+import app.world.domain.TileChanged;
 import app.world.domain.TileCreature;
-import app.world.domain.TileObstacle;
+import app.world.domain.TileObject;
 import app.world.domain.TileSurface;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -22,15 +21,16 @@ import javafx.scene.paint.Color;
  * @author Ron Olzheim
  * @version 1.0
  */
-public class Tile implements CollisionDetect {
+public class Tile implements TileChanged {
     private Coordinate coord;
     private Color color = null;
     private double paddingX = 0;
     private double paddingY = 0;
     private CanvasBackBuffer backBuffer;
     private TileSurface surface;
-    private TileObstacle obstacle;
+    private TileObject object;
     private TileCreature creature;
+    private boolean tileChanged = false;
     
     public Tile(Coordinate coordinate, TileSurface surface) { this(coordinate, surface, 0, 0); }
     public Tile(Coordinate coordinate, TileSurface surface, double paddingX, double paddingY) {
@@ -50,8 +50,9 @@ public class Tile implements CollisionDetect {
     public void render(GraphicsContext gc, double x, double y, double w, double h) {
         //backBuffer.renderBuffer(gc, x, y, w, h);
         if (surface != null) surface.renderTile(gc, x, y, w, h);
-        if (obstacle != null) obstacle.renderTile(gc, x, y, w, h);
+        if (object != null) object.renderTile(gc, x, y, w, h);
         if (creature != null) creature.renderTile(gc, x, y, w, h);
+        tileChanged = false;
     }
     
     
@@ -62,17 +63,19 @@ public class Tile implements CollisionDetect {
     public TileSurface setSurface(TileSurface surface) {
         this.surface = surface;
         //redrawBackBuffer();
+        tileChanged = true;
         return surface;
     }
     
-    public TileObstacle getObstacle() {
-        return obstacle;
+    public TileObject getObject() {
+        return object;
     }
     
-    public TileObstacle setObstacle(TileObstacle obstacle) {
-        this.obstacle = obstacle;
+    public TileObject setObject(TileObject object) {
+        this.object = object;
         //redrawBackBuffer();
-        return obstacle;
+        tileChanged = true;
+        return object;
     }
 
     public TileCreature getCreature() {
@@ -82,6 +85,7 @@ public class Tile implements CollisionDetect {
     public TileCreature setCreature(TileCreature creature) {
         this.creature = creature;
         //redrawBackBuffer();
+        tileChanged = true;
         return creature;
     }
     
@@ -96,10 +100,17 @@ public class Tile implements CollisionDetect {
             backBuffer.revertAsGraphicsContent();
         }
     }
-    
 
     @Override
-    public Direction.DirectionList CollisionDetect(Coordinate curCoord) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean isChanged() {
+        boolean retVal = tileChanged;
+        tileChanged = false;
+        return retVal;
     }
+
+    @Override
+    public void setChanged(boolean changed) {
+        tileChanged = changed;
+    }
+
 }

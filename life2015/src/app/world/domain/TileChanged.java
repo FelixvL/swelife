@@ -11,4 +11,5 @@ package app.world.domain;
  */
 public interface TileChanged {
     public boolean isChanged();
+    public void setChanged(boolean changed);
 }

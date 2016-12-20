@@ -6,8 +6,8 @@
 package app.world.domain;
 
 import app.graphics.tilemapper.LifeEngine;
-import app.graphics.tilemapper.Tile;
-import app.graphics.tilemapper.ViewPort;
+import app.world.interfaces.CreatureCallback;
+import app.world.interfaces.CreatureListener;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -16,31 +16,49 @@ import javafx.scene.paint.Color;
  * @author Ron Olzheim
  * @version 1.1
  */
-public class Creature implements TileCreature {
-    private LifeEngine lEngine;
-    private ViewPort vp;
+public class Creature implements TileCreature, CreatureListener {
+    protected final LifeEngine lEngine;
+    //public InteractionResult.LevelKind life;
     public Coordinate coord;
     public Direction dir;
     public int speedProperty = 1;
-    private int speedCounter = 0;
-    private Color color;
+    protected int speedCounter = 0;
+    protected Color color;
+    protected int health = 1000;
     
-    public Creature(LifeEngine LifeEngine, ViewPort viewPort, int initPosX, int initPosY, int speed) {
+    
+    public Creature(LifeEngine LifeEngine, int initPosX, int initPosY, int speed) {
+        color = Color.WHITE;
         lEngine = LifeEngine;
-        vp = viewPort;
+        //life = new InteractionResult.AttackDamage(0, this);  
         coord = new Coordinate(initPosX, initPosY);
         dir = Direction.UP;
         speedProperty = speed;
     }
     
-    // Invoked by the 
+    
+    // CreatureListener Interface -- Invoked by the LifeEngine: 
     @Override
-    public void doTurn() {
+    public boolean doTurn() {
         speedCounter++;
         if (speedCounter >= speedProperty) {
             speedCounter = 0;
-
             boolean doRandomDirectionChange = Math.random() * 5 > 4;
+            /*
+            if (speedProperty >= 2) {
+                Creature fnd = lEngine.findNearestObject(coord, this, new CreatureCallback.CompareAimedCreature() {
+                    @Override
+                    public int doCompare(Creature have, Creature test) {
+                        return (int)(test.speedProperty < speedProperty - 1 ? test.coord.getDistance(coord) : 100000); 
+                    }
+                    
+                });
+                color = Color.rgb(255, 0, 255);
+                if (fnd != null) {
+                    dir = coord.AimFor(fnd.coord);
+                }
+            }
+            */
             Direction.DirectionList possibleDirections = collisionDetect(coord);
             possibleDirections.allign(dir);
             if (!possibleDirections.isDirectionSet(dir)) {
@@ -48,22 +66,38 @@ public class Creature implements TileCreature {
             }else if (doRandomDirectionChange) {
                 dir = possibleDirections.getSlightChange();
             }
-            if (lEngine.moveTo(this, new Coordinate(coord), applyScreenWrapAround(coord.ApplyDirection(dir)))) {
-
+            if (lEngine.moveTo(this, new Coordinate(coord), coord.ApplyDirection(dir))) {
+                // no movement done
+            }
+            if (lEngine.getTile(coord).getSurface() instanceof TileWater) {
+                health = 0;
             }
         }
-    }
-    
-    private Coordinate applyScreenWrapAround(Coordinate coordinate) {
-        coordinate.setX((coordinate.getX() + vp.getTileMap().getTileCountX()) % vp.getTileMap().getTileCountX());
-        coordinate.setY((coordinate.getY() + vp.getTileMap().getTileCountY()) % vp.getTileMap().getTileCountY());
-        return coordinate;
+        return health > 0;
     }
 
+  
+    // Detect collision to avoid all Obstacles:
+    public Direction.DirectionList collisionDetect(Coordinate curCoord) {
+        return lEngine.CollisionDetect(curCoord, 2).addStandStill();
+    }
 
     @Override
+    public InteractionResult attack(int force) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public InteractionResult damage(int health) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    
+    
+    // TileCreature Interface:
+    @Override
     public Color getColor() {
-        return Color.WHITE;
+        return color;//Color.WHITE;
     }
 
     @Override
@@ -76,23 +110,9 @@ public class Creature implements TileCreature {
         gc.fillOval(x + paddingX, y + paddingY, w - paddingX, h - paddingY);
     }
 
-
-  
-    // Detect collision to avoid all Obstacles:
-    public Direction.DirectionList collisionDetect(Coordinate curCoord) {
-        Direction.DirectionList collisionList = new Direction.DirectionList();
-        for (int i=0; i<Direction.getCount(); i++) {
-            Direction testDirection = Direction.getEnumFromVal(i);
-            Tile testTile = vp.getTileMap().getTile(
-                    vp.getTileMapWrapArroundX(curCoord.getTestX(testDirection)), 
-                    vp.getTileMapWrapArroundY(curCoord.getTestY(testDirection)));
-            if (((testTile.getSurface()) instanceof TileLand) && 
-                    (testTile.getObstacle() == null) && 
-                    (testTile.getCreature() == null)) 
-                        collisionList.addDirection(testDirection);
-        }
-        return collisionList;
+    @Override
+    public int getHealth() {
+        return health;
     }
-
     
 }

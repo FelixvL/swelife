@@ -10,9 +10,9 @@ import javafx.scene.paint.Color;
 
 /**
  *
- * @author Ron
+ * @author Ron Olzheim
  */
-public interface TileCreature {
+public interface TileObject {
     Color getColor();
-    void renderTile(GraphicsContext gc, double x, double y, double w, double h); 
+    void renderTile(GraphicsContext gc, double x, double y, double w, double h);
 }

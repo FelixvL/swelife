@@ -5,7 +5,7 @@
  */
 package app.world.interfaces;
 
-import javafx.scene.canvas.GraphicsContext;
+import app.world.domain.InteractionResult;
 
 /**
  *
@@ -13,6 +13,8 @@ import javafx.scene.canvas.GraphicsContext;
  * @version 1.0
  */
 public interface CreatureListener {
-    public void doTurn();
-    public void render(GraphicsContext gc, double x, double y, double w, double h);
+    public boolean doTurn();
+    public InteractionResult attack(int force);
+    public InteractionResult damage(int health);
+    public int getHealth();
 }

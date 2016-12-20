@@ -14,16 +14,18 @@ import static runtime.control.JFXHelper.colorToHexCode;
  * @version 1.3
  */
 public class RenderEngine {
-    //public TileMap tileMap = null;
     private ViewPort vp = null;
     private AnimationTimer aniTmr;
-    private int fps = 50;
+    private int fps = 40;
     private long lastFrameNs = 0;
+    boolean forcedRedraw = false;
     
     public RenderEngine() {}
     public RenderEngine(ViewPort viewPort) {
         this.vp = viewPort;
-        
+        vp.redrawEvent.addListener((ViewPort detail) -> {
+            forcedRedraw = true;
+        });
     }
     
     public void setFps(int fps) { this.fps = constrain(fps, 1, 200); }
@@ -74,17 +76,20 @@ public class RenderEngine {
                 ? ((vp.getHeight() - (endTileY * tileMap.getTileSizeY()  * vp.getZoomY())) / 2) : 0;
         // Erase Screen:
         gc.getCanvas().getParent().getParent().setStyle("-fx-background-color: " + colorToHexCode(tileMap.getBackColor()) + ";");
-        gc.clearRect(0, 0, vp.getWidth()+100, vp.getHeight()+100);
+        if (true || forcedRedraw) gc.clearRect(0, 0, vp.getWidth()+100, vp.getHeight()+100);
         // Render Tiles:
         for (int x=0; x<endTileX; x++) {
             for (int y=0; y<endTileY; y++) {
                 Tile curTile = tileMap.tiles.get(x+startTileX).get(y+startTileY);
+                //if (curTile.isChanged() || forcedRedraw) {
                 curTile.render(gc, 
                         offsCenterX + vp.getscrollbarXPixelShift() + vp.getTilePixelX(x), 
                         offsCenterY + vp.getscrollbarYPixelShift() + vp.getTilePixelY(y), 
                         vp.getTilePixelW(), vp.getTilePixelH());
+                //}
             }
         }
+        forcedRedraw = false;
     }
     
     

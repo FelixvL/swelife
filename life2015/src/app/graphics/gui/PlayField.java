@@ -10,6 +10,7 @@ import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
@@ -18,6 +19,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -197,7 +199,7 @@ public class PlayField extends Application {
             public void callback_Event(ViewPort vp) {
                 output.setWidth(vp.getWidth());
                 output.setHeight(vp.getHeight());
-                /// System.out.println("resize: " + root.getWidth() + ", " + root.getHeight());
+                //System.out.println("resize: " + root.getWidth() + ", " + root.getHeight());
             }   
         });
         
@@ -205,7 +207,7 @@ public class PlayField extends Application {
         view.redrawEvent.addListener(new CallbackEvent.Listener<ViewPort>() {
             public void callback_Event(ViewPort vp) {
                 //engine.renderTiles();
-                /// System.out.println("redraw");
+               // System.out.println("redraw");
             }   
         });
         
@@ -217,7 +219,7 @@ public class PlayField extends Application {
                 scrollbarX.setMax(maxValX);
                 scrollbarX.setVisible(maxValX > 0);
                 scrollbarX.setValue(vp.getScrollbarXVal());
-                /// System.out.println("updateScrollbarX: "+vp.getScrollbarXVal()+" - "+maxValX);
+                //System.out.println("updateScrollbarX: "+vp.getScrollbarXVal()+" - "+maxValX);
             }   
         });
         
@@ -227,7 +229,19 @@ public class PlayField extends Application {
             scrollbarY.setMax(maxValY);
             scrollbarY.setVisible(maxValY > 0);
             scrollbarY.setValue(vp.getScrollbarYVal());
-            /// System.out.println("updateScrollbarY");
+            //System.out.println("updateScrollbarY");
+        });
+        
+        root.setOnKeyPressed(new EventHandler<KeyEvent>(){
+            @Override
+            public void handle(KeyEvent event) {
+                if (event.getText().equalsIgnoreCase("r")) {
+                    world.generateMap();
+                }else if (event.getText().equalsIgnoreCase("l")) {
+                    lEngine.testCreature(10);
+                }
+            }
+            
         });
 
 
@@ -255,9 +269,9 @@ public class PlayField extends Application {
         primaryStage.show();
         
         
-        lEngine.testCreature(20);
+        lEngine.testCreature(40);
        // lEngine.setTimerInterval(500);
-        lEngine.startRendering();
+        lEngine.startSimulation();
         engine.startRendering();
     }
     

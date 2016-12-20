@@ -12,11 +12,11 @@ import javafx.scene.paint.Color;
  *
  * @author Ron Olzheim
  */
-public class TileObstacle implements TileObject {
-    private Color color = Color.RED;
+public class TilePlant implements TileObject {
+    private Color color = Color.GREEN;
     
-    public TileObstacle() { super(); }
-    public TileObstacle(Color color) {
+    public TilePlant() { super(); }
+    public TilePlant(Color color) {
         super();
         this.color = color;
     }

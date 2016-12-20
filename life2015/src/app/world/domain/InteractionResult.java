@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * @author Ron Olzheim
  * @version 0.1
  */
-public class WorldInteraction {
+public class InteractionResult {
     public class LevelKind {
         private int level;
         public LevelKind(int level) {

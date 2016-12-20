@@ -5,7 +5,9 @@
  */
 package app.world.interfaces;
 
+import app.graphics.tilemapper.Tile;
 import app.world.domain.Coordinate;
+import app.world.domain.Creature;
 import app.world.domain.Direction;
 import app.world.domain.TileCreature;
 
@@ -16,7 +18,11 @@ import app.world.domain.TileCreature;
  */
 public interface CreatureCallback {
     boolean moveTo(TileCreature creature, Coordinate fromCoord, Coordinate toCoord);
-    
     public Direction.DirectionList CollisionDetect(Coordinate curCoord);
-    
+    public Direction.DirectionList CollisionDetect(Coordinate curCoord, int ray);
+    public Tile getTile(Coordinate coord);
+    public static interface CompareAimedCreature {
+        public int doCompare(Creature have, Creature test);
+    }
+    public Creature findNearestObject(Coordinate curCoord, Creature obj, CompareAimedCreature compareAimedCreature);
 }

@@ -7,6 +7,7 @@ package app.world.domain;
 
 import app.graphics.tilemapper.TileMap;
 import app.helper.SimplexNoise;
+import java.util.Random;
 import javafx.scene.paint.Color;
 
 
@@ -19,7 +20,7 @@ public class World {
     private TileMap tileMap;
     private SimplexNoise gen1;
     private SimplexNoise gen2;
-    
+    private double seed; 
     
     public World(TileMap tileMap) {
         this.tileMap = tileMap;
@@ -31,12 +32,19 @@ public class World {
         
         //float rng1 = PM_PRNG.create(seed1);
         //float rng2 = PM_PRNG.create(seed2);
-        //gen1 = new SimplexNoise(rng1.nextDouble.bind(rng1));
+        //gen1 = new SimplexNoise(rng1.doubles().bind(rng1));
         //gen2 = new SimplexNoise(rng2.nextDouble.bind(rng2));
-
+        Random rnd = new Random();
+        rnd.setSeed(System.currentTimeMillis());
+        seed = rnd.nextDouble();
+        double fact1 = 0.5 + rnd.nextDouble()*8;
+        double fact2 = 0.5 + rnd.nextDouble()*8;
+        double lpf1 = 0;
+        double lpf2 = 0;
         for (double y = 0; y < height; y++) {
-            for (double x = 0; x < width; x++) {      
-                double nx = x/width - 0.5, ny = y/height - 0.5;
+            for (double x = 0; x < width; x++) {     
+                double seed = rnd.nextDouble(); 
+                double nx = fact1 * x/width - 0.5, ny = fact2 * y/height - 0.5;
                 double e = (1.00 * noise1( 1 * nx,  1 * ny)
                        + 0.50 * noise1( 2 * nx,  2 * ny)
                        + 0.25 * noise1( 4 * nx,  4 * ny)
@@ -54,21 +62,24 @@ public class World {
                 m /= (1.00+0.75+0.33+0.33+0.33+0.50);
                 /* draw biome(e, m) at x,y */
                 //System.out.print(e + " " + m + "   ");
-                if (m > 0.4) {
+                lpf1=((lpf1*10)+e)/11;
+                lpf2=((lpf2*10)+m)/11;
+                if (m > 0.48) {
                     // Surface:
-                    Color col = Color.rgb((int)(e * 0xFF), (int)(m * 0xFF), 0);
+                    Color col = Color.rgb((int)(lpf1 * 0xFF), (int)(lpf2 * 0xFF), 0);
                     tileMap.getTile((int)x, (int)y).setSurface(new TileLand(col));
                 }else{
                 // Water:
-                    Color col = Color.rgb((int)(e * 0xFF), (int)(m/1.5 * 0xFF), (int)(m * 0xFF));
+                    Color col = Color.rgb((int)(lpf1 * 0xFF), (int)(lpf2/1.5 * 0xFF), (int)(m * 0xFF));
                     tileMap.getTile((int)x, (int)y).setSurface(new TileWater(col));
                 }
                 // Obstacle:
-                if (m > 0.7) tileMap.getTile((int)x, (int)y).setObstacle(new TileObstacle());
+                tileMap.getTile((int)x, (int)y).setObject(null);
+                if (m > 0.7) tileMap.getTile((int)x, (int)y).setObject(new TileObstacle());
             }
         }
     }
-    private double noise1(double nx, double ny) { return SimplexNoise.noise(nx, ny)/2 + 0.5; }
-    private double noise2(double nx, double ny) { return SimplexNoise.noise(nx, ny)/2 + 0.5; }
+    private double noise1(double nx, double ny) { return SimplexNoise.noise(nx, ny, 1, seed)/2 + 0.5; }
+    private double noise2(double nx, double ny) { return SimplexNoise.noise(nx, ny, 1, seed)/2 + 0.5; }
 }
 

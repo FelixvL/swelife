@@ -6,10 +6,9 @@
 package app.graphics.tilemapper;
 
 import app.world.domain.Coordinate;
-import app.world.domain.Direction;
+//import app.world.domain.Direction;
 import app.world.domain.TileLand;
-import app.world.domain.TileWater;
-import app.world.interfaces.CollisionTest;
+//import app.world.domain.TileWater;
 import java.util.ArrayList;
 import javafx.scene.paint.Color;
 

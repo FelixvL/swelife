@@ -6,11 +6,14 @@
 package app.world.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
  * @author Ron Olzheim
- * @version 1.1
+ * @version 1.2
  */
 public enum Direction {
     UP         (0),
@@ -20,41 +23,70 @@ public enum Direction {
     DOWN       (4),
     DOWN_LEFT  (5),
     LEFT       (6),
-    LEFT_UP    (7);
+    LEFT_UP    (7),
+    STANDSTILL (8);
     
     private static final Direction[] typeLookup = Direction.values();
+    private static ArrayList<Direction> allDirections;
     private final int move; 
     Direction(int move) { this.move = move; }
     int getVal() { return move; }
     public static int getCount() { return typeLookup.length; }
-    int getXOffset() { return move > 0 && move < 4 ? 1 : move > 4 && move < 9 ? -1 : 0; }
-    int getYOffset() { return move < 2 || move > 6 ? -1 : move > 2 && move < 6 ? 1 : 0; }
+    int getXOffset() { return move > 0 && move < 4 ? 1 : move > 4 && move < 8 ? -1 : 0; }
+    int getYOffset() { return move < 2 || (move > 6 && move < 8) ? -1 : move > 2 && move < 6 ? 1 : 0; }
     public static Direction getEnumFromVal(int val) { return typeLookup[val]; }
-    
+    public static Direction target(int deltaX, int deltaY) {
+        int dir = deltaX>0 ? 2 : deltaX<0 ? 6 : 0;
+        dir +=  deltaX>0 ? (deltaY<0 ? -1 : deltaY>0 ? 1 : 0) : 
+                deltaX<0 ? (deltaY<0 ? 1 : deltaY>0 ? -1 : 0) : 
+                           (deltaY<0 ? 0 : deltaY>0 ? 4 : 8);
+        return typeLookup[dir];
+    }
+    public static List<Direction> getAllDirections() {
+        if (allDirections == null) {
+            allDirections = new ArrayList<>();
+            allDirections.addAll(Arrays.asList(typeLookup));
+            allDirections.remove(Direction.STANDSTILL);
+        }
+        return (List<Direction>) Collections.unmodifiableList(allDirections);
+    }
     
     public static class DirectionList{
-        private ArrayList<Direction> possibleDirections = new ArrayList<>();
+        private ArrayList<Direction> directionsList = new ArrayList<>();
         public DirectionList() {}
-        public DirectionList(ArrayList<Direction> possibleDirections) {
-            this.possibleDirections = possibleDirections;
+        public DirectionList(ArrayList<Direction> directionsList) {
+            this();
+            this.directionsList = directionsList;
         }
-        public DirectionList addDirection(Direction addDirection) {
-            if (addDirection != null) possibleDirections.add(addDirection);
+        public DirectionList addStandStill() { 
+            directionsList.add(Direction.STANDSTILL); 
+            return this; 
+        }
+        public DirectionList validateAllDirections() {
+            directionsList.addAll(Direction.getAllDirections());
             return this;
         }
-        public int getCount() { return possibleDirections.size(); }
+        public DirectionList addDirection(Direction direction) {
+            if (direction != null) directionsList.add(direction);
+            return this;
+        }
+        public DirectionList delDirection(Direction direction) {
+            if (direction != null) directionsList.remove(direction);
+            return this;
+        }
+        public int getCount() { return directionsList.size(); }
         
         public boolean isDirectionSet(Direction testDirection) {
-            return possibleDirections.indexOf(testDirection) >= 0;
+            return directionsList.indexOf(testDirection) >= 0;
         }
        
         // Sould be used as object-prefix for the directional change request-methods below:
         public DirectionList allign(Direction currentDirection) {
             int dirCount = getCount();
-            int curDirIndex = possibleDirections.indexOf(currentDirection);
+            int curDirIndex = directionsList.indexOf(currentDirection);
             while (curDirIndex > 0) {
-                possibleDirections.add(dirCount, possibleDirections.get(0));
-                possibleDirections.remove(0);
+                directionsList.add(dirCount, directionsList.get(0));
+                directionsList.remove(0);
                 curDirIndex--;
             }
             return this;
@@ -65,7 +97,7 @@ public enum Direction {
         }
        
         public Direction getOther() {
-            return changeDirection(1 + (int)(Math.random() * (getCount()-1)));
+            return changeDirection(1 + (int)(Math.random() * (getCount())));
         }
        
         public Direction getSlightChange() {
@@ -81,7 +113,7 @@ public enum Direction {
                 return null;
             }else{
                 int dirIndex = (getCount() + dirOffset) % (getCount()==0 ? 1 : getCount());
-                return possibleDirections.get(dirIndex);
+                return directionsList.get(dirIndex);
             }
         }
     }
