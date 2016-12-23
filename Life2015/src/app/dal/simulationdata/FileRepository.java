@@ -9,8 +9,7 @@ package app.dal.simulationdata;
  *
  * @author DieltjesT
  */
-public class FileRepository implements IDatalayer{
-
+public class FileRepository implements IDatalayer {
 
     public boolean SaveSimulationData(SimuationData data) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -19,5 +18,5 @@ public class FileRepository implements IDatalayer{
     public SimuationData GetSimulationData() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
 }

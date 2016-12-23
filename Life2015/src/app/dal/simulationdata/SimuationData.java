@@ -12,5 +12,5 @@ import java.io.Serializable;
  * @author DieltjesT
  */
 public class SimuationData implements Serializable{
-    //
+    //TODO fill with data to be saved
 }
